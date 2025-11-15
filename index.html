@@ -7,7 +7,7 @@
       body {
         font-family: Arial, sans-serif;
         text-align: center;
-        margin-top: 140px;
+        margin-top: 60px;
         background: #f5f5f5;
       }
 
@@ -46,12 +46,13 @@
       }
 
       .dots {
-        font-size: 50px;
-        margin: 20px 0;
-        min-height: 60px;
-        letter-spacing: 10px;
-        word-wrap: break-word;
-        line-height: 60px;
+        font-size: 32px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 4px;
+        max-width: 350px;
+        margin: 0 auto;
       }
 
       .count {
@@ -63,10 +64,55 @@
       h2 {
         margin-bottom: 15px;
       }
+
+      .main-title {
+        font-size: 48px;
+        margin: 0 auto 40px auto;
+      }
+
+      .invalid-box {
+        width: 420px;
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 180px;
+      }
+
+      .invalid-btn {
+        font-size: 20px;
+        padding: 8px 18px;
+      }
+
+      .invalid-dots {
+        font-size: 32px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 4px;
+        max-width: 350px;
+        margin: 0 auto;
+      }
+
+      .invalid-container {
+        margin-top: 50px;
+        display: flex;
+        justify-content: center;
+      }
+      @media (max-width: 900px) {
+        body { margin-top: 60px; }
+        .invalid-box { width: 90%; max-width: 420px; }
+        .container { flex-direction: column; gap: 40px; }
+        .candidate-box { width: 90%; }
+      }
     </style>
   </head>
   <body>
-    <h1>2026총무선거 개표</h1>
+    <h1 class="main-title">2026총무선거 개표</h1>
 
     <div class="container">
       <div class="candidate-box">
@@ -86,6 +132,18 @@
       </div>
     </div>
 
+    <div class="invalid-container">
+      <div class="invalid-box">
+        <h2>무효표</h2>
+        <div style="margin-top:10px; display:flex; justify-content:center; gap:10px;">
+          <button class="vote-btn invalid-btn" onclick="invalidVote()">+1</button>
+          <button class="vote-btn invalid-btn" onclick="cancelInvalid()">취소</button>
+        </div>
+        <div id="invalidDots" class="invalid-dots"></div>
+        <div id="countInvalid" class="count" style="font-size:32px; margin-top:10px;">0 표</div>
+      </div>
+    </div>
+
     <div style="margin-top:40px;">
       <button class="vote-btn" onclick="showFinish()">투표 끝</button>
     </div>
@@ -93,15 +151,20 @@
     <script>
       let count1 = 0;
       let count2 = 0;
+      let invalidCount = 0;
 
       function vote(num) {
         if (num === 1) {
           count1++;
-          document.getElementById("dots1").innerHTML += "●";
+          let s1 = document.createElement("span");
+          s1.textContent = "●";
+          document.getElementById("dots1").appendChild(s1);
           document.getElementById("count1").innerText = count1 + " 표";
         } else {
           count2++;
-          document.getElementById("dots2").innerHTML += "●";
+          let s2 = document.createElement("span");
+          s2.textContent = "●";
+          document.getElementById("dots2").appendChild(s2);
           document.getElementById("count2").innerText = count2 + " 표";
         }
       }
@@ -109,14 +172,31 @@
       function cancelVote(num) {
         if (num === 1 && count1 > 0) {
           count1--;
-          let dots = document.getElementById("dots1").innerHTML;
-          document.getElementById("dots1").innerHTML = dots.slice(0, -1);
+          let box1 = document.getElementById("dots1");
+          if (box1.lastChild) box1.removeChild(box1.lastChild);
           document.getElementById("count1").innerText = count1 + " 표";
         } else if (num === 2 && count2 > 0) {
           count2--;
-          let dots = document.getElementById("dots2").innerHTML;
-          document.getElementById("dots2").innerHTML = dots.slice(0, -1);
+          let box2 = document.getElementById("dots2");
+          if (box2.lastChild) box2.removeChild(box2.lastChild);
           document.getElementById("count2").innerText = count2 + " 표";
+        }
+      }
+
+      function invalidVote() {
+        invalidCount++;
+        document.getElementById("countInvalid").innerText = invalidCount;
+        let inv = document.createElement("span");
+        inv.textContent = "●";
+        document.getElementById("invalidDots").appendChild(inv);
+      }
+
+      function cancelInvalid() {
+        if (invalidCount > 0) {
+          invalidCount--;
+          document.getElementById("countInvalid").innerText = invalidCount;
+          let ibox = document.getElementById("invalidDots");
+          if (ibox.lastChild) ibox.removeChild(ibox.lastChild);
         }
       }
 
@@ -147,7 +227,10 @@
             </h2>
 
             <h3 style="font-size:35px; margin-top:25px; color:#666;">
-              총 투표수: ${count1 + count2} 표
+              총 투표수: ${count1 + count2 + invalidCount} 표
+            </h3>
+            <h3 style="font-size:35px; margin-top:15px; color:#666;">
+              무효표: ${invalidCount} 표
             </h3>
           </div>
         `;
