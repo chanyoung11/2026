@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>2026총무선거 개표</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin-top: 40px;
+        background: #f5f5f5;
+      }
+
+      h1 {
+        margin-bottom: 40px;
+      }
+
+      .container {
+        display: flex;
+        justify-content: center;
+        gap: 60px;
+      }
+
+      .candidate-box {
+        width: 480px;
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .vote-btn {
+        font-size: 22px;
+        padding: 12px 28px;
+        cursor: pointer;
+        border: none;
+        background: #2c7dff;
+        color: white;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        transition: 0.2s;
+      }
+
+      .vote-btn:hover {
+        background: #0056e0;
+      }
+
+      .dots {
+        font-size: 50px;
+        margin: 20px 0;
+        min-height: 60px;
+        letter-spacing: 10px;
+        word-wrap: break-word;
+        line-height: 60px;
+      }
+
+      .count {
+        font-size: 40px;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+
+      h2 {
+        margin-bottom: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>2026총무선거 개표</h1>
+
+    <div class="container">
+      <div class="candidate-box">
+        <h2>기호 1번 김하은</h2>
+        <button class="vote-btn" onclick="vote(1)">후보 1 투표</button>
+        <button class="vote-btn" onclick="cancelVote(1)" style="background:#2c7dff; margin-left:10px; font-size:22px; padding:12px 28px;">취소</button>
+        <div id="dots1" class="dots"></div>
+        <div id="count1" class="count">0 표</div>
+      </div>
+
+      <div class="candidate-box">
+        <h2>기호 2번 박주연</h2>
+        <button class="vote-btn" onclick="vote(2)">후보 2 투표</button>
+        <button class="vote-btn" onclick="cancelVote(2)" style="background:#2c7dff; margin-left:10px; font-size:22px; padding:12px 28px;">취소</button>
+        <div id="dots2" class="dots"></div>
+        <div id="count2" class="count">0 표</div>
+      </div>
+    </div>
+
+    <div style="margin-top:40px;">
+      <button class="vote-btn" onclick="showFinish()">투표 끝</button>
+    </div>
+
+    <script>
+      let count1 = 0;
+      let count2 = 0;
+
+      function vote(num) {
+        if (num === 1) {
+          count1++;
+          document.getElementById("dots1").innerHTML += "●";
+          document.getElementById("count1").innerText = count1 + " 표";
+        } else {
+          count2++;
+          document.getElementById("dots2").innerHTML += "●";
+          document.getElementById("count2").innerText = count2 + " 표";
+        }
+      }
+
+      function cancelVote(num) {
+        if (num === 1 && count1 > 0) {
+          count1--;
+          let dots = document.getElementById("dots1").innerHTML;
+          document.getElementById("dots1").innerHTML = dots.slice(0, -1);
+          document.getElementById("count1").innerText = count1 + " 표";
+        } else if (num === 2 && count2 > 0) {
+          count2--;
+          let dots = document.getElementById("dots2").innerHTML;
+          document.getElementById("dots2").innerHTML = dots.slice(0, -1);
+          document.getElementById("count2").innerText = count2 + " 표";
+        }
+      }
+
+      function showFinish() {
+        const winner =
+          count1 > count2
+            ? { name: "기호 1번 김하은", votes: count1 }
+            : count2 > count1
+            ? { name: "기호 2번 박주연", votes: count2 }
+            : { name: "동점", votes: count1 };
+
+        document.body.innerHTML = `
+          <div style="margin-top:150px; text-align:center;">
+            <h1 style="font-size:60px; color:#333;">
+              ${
+                winner.name === "동점"
+                  ? "두 후보가 동일 득표수로 동점입니다."
+                  : winner.name + " 당선"
+              }
+            </h1>
+
+            <h2 style="font-size:38px; margin-top:30px; color:#444;">
+              기호 1번 김하은: ${count1} 표
+            </h2>
+
+            <h2 style="font-size:38px; margin-top:15px; color:#444;">
+              기호 2번 박주연: ${count2} 표
+            </h2>
+
+            <h3 style="font-size:35px; margin-top:25px; color:#666;">
+              총 투표수: ${count1 + count2} 표
+            </h3>
+          </div>
+        `;
+      }
+    </script>
+  </body>
+</html>
